@@ -213,7 +213,7 @@ namespace Facebook.Unity
                 ComponentFactory.GetComponent<IOSFacebookLoader>();
 #elif UNITY_ANDROID
                 ComponentFactory.GetComponent<AndroidFacebookLoader>();
-#elif UNITY_UWP
+#elif NETFX_CORE
                 ComponentFactory.GetComponent<WindowsFacebookLoader>();
 #else
                 throw new NotImplementedException("Facebook API does not yet support this platform");

@@ -3,7 +3,7 @@ using Facebook.Unity;
 using Facebook.Unity.Mobile;
 using System;
 using System.Collections.Generic;
-#if UNITY_UWP
+#if NETFX_CORE
 using Windows.Foundation.Collections;
 #endif
 
@@ -11,7 +11,7 @@ namespace Facebook.Unity.Mobile.UWP
 {
     internal sealed class WindowsFacebook : MobileFacebook
     {
-#if UNITY_UWP
+#if NETFX_CORE
         private FBSession facebookWindows = null;
 #endif
 
@@ -49,9 +49,17 @@ namespace Facebook.Unity.Mobile.UWP
             }
         }
 
+        private IFacebookCallbackHandler WindowsGameObject
+        {
+            get
+            {
+                return ComponentFactory.GetComponent<WindowsFacebookGameObject>();
+            }
+        }
+
         public override void Init(string appId, bool cookie, bool logging, bool status, bool xfbml, string channelUrl, string authResponse, bool frictionlessRequests, HideUnityDelegate hideUnityDelegate, InitDelegate onInitComplete)
         {
-#if UNITY_UWP
+#if NETFX_CORE
             base.Init(appId, cookie, logging, status, xfbml, channelUrl, authResponse, frictionlessRequests, hideUnityDelegate, onInitComplete);
 
             facebookWindows = Facebook.FBSession.ActiveSession;
@@ -60,7 +68,11 @@ namespace Facebook.Unity.Mobile.UWP
 
             //We don't want to call the Facebook-callback (OnInitComplete) because it won't trigger our callback and it will ALSO trigger OnLoginComplete which is wrong
             if (onInitComplete != null)
-                onInitComplete();
+            {
+                this.WindowsGameObject.OnInitComplete(String.Empty);
+                //onInitComplete();
+            }
+                
 #endif
         }
 
@@ -86,7 +98,7 @@ namespace Facebook.Unity.Mobile.UWP
 
         public override void AppRequest(string message, OGActionType? actionType, string objectId, IEnumerable<string> to, IEnumerable<object> filters, IEnumerable<string> excludeIds, int? maxRecipients, string data, string title, FacebookDelegate<IAppRequestResult> callback)
         {
-#if UNITY_UWP
+#if NETFX_CORE
             InvokeOnUIThread(async () =>
             {
                 Dictionary<string, object> response = new Dictionary<string, object>();
@@ -134,7 +146,7 @@ namespace Facebook.Unity.Mobile.UWP
 
         public override void FeedShare(string toId, Uri link, string linkName, string linkCaption, string linkDescription, Uri picture, string mediaSource, FacebookDelegate<IShareResult> callback)
         {
-#if UNITY_UWP
+#if NETFX_CORE
             InvokeOnUIThread(async () =>
             {
                 Dictionary<string, object> response = new Dictionary<string, object>();
@@ -205,7 +217,7 @@ namespace Facebook.Unity.Mobile.UWP
 
         public override void LogInWithReadPermissions(IEnumerable<string> scope, FacebookDelegate<ILoginResult> callback)
         {
-#if UNITY_UWP
+#if NETFX_CORE
             InvokeOnUIThread(async ()=>
             {
                 //TODO: Need this, but commented out for now until we create an InternalGetPermissions(...) method
@@ -255,7 +267,7 @@ namespace Facebook.Unity.Mobile.UWP
 
         public override void LogOut()
         {
-#if UNITY_UWP
+#if NETFX_CORE
             InvokeOnUIThread(async ()=>
             {
                 await facebookWindows.LogoutAsync();
@@ -274,7 +286,7 @@ namespace Facebook.Unity.Mobile.UWP
         }
 
         #region Helper-methods that is only available on UWP
-#if UNITY_UWP
+#if NETFX_CORE
         private string createErrorMessageAccordingToFacebookUnitySDK(FBError error)
         {
             if (error != null)
@@ -286,7 +298,7 @@ namespace Facebook.Unity.Mobile.UWP
 
         private void InvokeOnUIThread(Action callback)
         {
-#if UNITY_UWP
+#if NETFX_CORE
             UnityEngine.WSA.Application.InvokeOnUIThread(() =>
             {
                 if (callback != null)
@@ -298,7 +310,7 @@ namespace Facebook.Unity.Mobile.UWP
 
         private void InvokeOnAppThread(Action callback)
         {
-#if UNITY_UWP
+#if NETFX_CORE
             UnityEngine.WSA.Application.InvokeOnAppThread(() =>
             {
                 if (callback != null)

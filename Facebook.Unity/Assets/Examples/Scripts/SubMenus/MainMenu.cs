@@ -58,13 +58,14 @@ namespace Facebook.Unity.Example
                 this.Status = "Login (for publish_actions) called";
             }
 
-            #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_EDITOR
+            #if UNITY_IOS || UNITY_ANDROID || UNITY_WSA || UNITY_EDITOR
             if (Button("Logout"))
             {
                 CallFBLogout();
                 this.Status = "Logout called";
             }
             #endif
+
             GUILayout.EndHorizontal();
 
             GUI.enabled = enabled && FB.IsInitialized;
